@@ -243,7 +243,7 @@ disp(final_results);
 
 bar(final_results);
 ylabel('Fold Change');
-xlabel('Conditions')'
+xlabel('Conditions');
 
     
 %% Challenge problems that extend the above (optional)
