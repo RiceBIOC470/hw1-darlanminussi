@@ -1,4 +1,5 @@
 % Homework 1. Due before class on 9/5/17
+% Darlan Conterno Minussi
 
 %% Problem 1 - addition with strings
 
@@ -13,7 +14,15 @@ x = 3; y = 5; % integers
 
 %your code goes here
 
+if (ischar(x))
+   x = str2num(x);
+end
+if (ischar(y))
+   y = str2num(y);
+end
+    
 %output your answer
+disp(x + y);
 
 %% Problem 2 - our first real biology problem. Open reading frames and nested loops.
 
@@ -26,6 +35,9 @@ x = 3; y = 5; % integers
 
 N = 500; % define sequence length
 
+bases = ['A' 'T' 'G' 'C'];
+gen_numbers = randi(numel(bases),[1 N]);
+rand_seq = bases(gen_numbers);
 
 
 %part 2: open reading frames (ORFs) are pieces of DNA that can be
@@ -33,13 +45,140 @@ N = 500; % define sequence length
 % stop codon (TAA, TGA, or TAG). Write a piece of code that finds the longest ORF 
 % in your seqeunce rand_seq. Hint: see the function strfind.
 
+N = 500; % define sequence length
+
+bases = ['A' 'T' 'G' 'C'];
+gen_numbers = randi(numel(bases),[1 N]);
+rand_seq = bases(gen_numbers);
+
+start = strfind(rand_seq, 'ATG');
+stop = [strfind(rand_seq, 'TGA') strfind(rand_seq, 'TAA') strfind(rand_seq, 'TAG')];
+
+
+for i = 1:length(start)
+    for j = 1:length(stop)
+        length_orf(i) = stop(j) - start(i);
+    end
+end
+
+if (~isempty(length_orf))
+length_orf = length_orf(length_orf > 0);
+length_orf = length_orf(mod(length_orf,3) == 0);
+
+disp(max(length_orf));
+else 
+    disp('No ORF found');
+end
+
 %part 3: copy your code in parts 1 and 2 but place it inside a loop that
 % runs 1000 times. Use this to determine the probability
 % that an sequence of length 500 has an ORF of greater than 50 b.p.
 
+
+length_orf_prob = 0;
+
+for iteration = 1:1000
+    
+    
+    N = 500; % define sequence length
+    
+    bases = ['A' 'T' 'G' 'C'];
+    gen_numbers = randi(numel(bases),[1 N]);
+    rand_seq = bases(gen_numbers);
+    
+    start = strfind(rand_seq, 'ATG');
+    stop = [strfind(rand_seq, 'TGA') strfind(rand_seq, 'TAA') strfind(rand_seq, 'TAG')];
+    
+    
+    for i = 1:length(start)
+        for j = 1:length(stop)
+            length_orf(i) = stop(j) - start(i);
+        end
+    end
+    
+    if (~isempty(length_orf))
+        length_orf = length_orf(length_orf > 50);
+        length_orf = length_orf(mod(length_orf,3) == 0);
+    else
+    end
+ 
+    
+if length(length_orf > 0)
+    length_orf_prob = length_orf_prob + 1;
+end
+    
+end
+
+
+prob = length_orf_prob/1000;
+disp(prob);
+
+
 %part 4: copy your code from part 3 but put it inside yet another loop,
 % this time over the sequence length N. Plot the probability of having an
 % ORF > 50 b.p. as a funciton of the sequence length. 
+
+length_orf_prob = 0
+seq_counter = 1
+table = []
+
+
+for n = 50:10:500
+    
+    bases = ['A' 'T' 'G' 'C'];
+    gen_numbers = randi(numel(bases),[1 n]);
+    rand_seq = bases(gen_numbers);
+    
+    
+    start = strfind(rand_seq, 'ATG');
+    stop = [strfind(rand_seq, 'TGA') strfind(rand_seq, 'TAA') strfind(rand_seq, 'TAG')];
+    
+    
+    for iteration = 1:1000
+       
+        
+        bases = ['A' 'T' 'G' 'C'];
+        gen_numbers = randi(numel(bases),[1 n]);
+        rand_seq = bases(gen_numbers);
+        
+        start = strfind(rand_seq, 'ATG');
+        stop = [strfind(rand_seq, 'TGA') strfind(rand_seq, 'TAA') strfind(rand_seq, 'TAG')];
+        
+        
+        for i = 1:length(start)
+            for j = 1:length(stop)
+                length_orf(i) = stop(j) - start(i);
+            end
+        end
+        
+        if (~isempty(length_orf))
+            length_orf = length_orf(length_orf > 50);
+            length_orf = length_orf(mod(length_orf,3) == 0);
+        else
+        end
+        
+        
+        if length(length_orf > 0)
+            length_orf_prob = length_orf_prob + 1;
+        end
+        
+    end
+    
+    
+    prob = length_orf_prob/1000;
+    
+    table(seq_counter,1) = n
+    table(seq_counter,2) = prob
+    
+    length_orf_prob = 0;
+    
+    seq_counter = seq_counter + 1;
+    
+end
+
+scatter(table(:,1), table(:,2));
+xlabel('Random sequence N');
+ylabel('Frequency orf > 50 bp');
 
 %part 5: Make sure your results from part 4 are sensible. What features
 % must this curve have (hint: what should be the value when N is small or when
@@ -60,9 +199,19 @@ N = 500; % define sequence length
 % part1: write code to read the Cp data from this file into a vector. You can ignore the last two
 % rows with positions beginning with G and H as there were no samples here. 
 
+% specifying full path, please remove path if testing and make sure file is in the same folder)
+rawdata = readtable('/Users/dcminussi/Documents/GitHub/hw1-darlanminussi/qPCRdata.txt');
+cp = rawdata(:,{'Cp'});
+cp.array = table2array(cp);
+
+
+
 % Part 2: transform this vector into an array representing the layout of
 % the plate. e.g. a 6 row, 12 column array should that data(1,1) = Cp from
 % A1, data(1,2) = Cp from A2, data(2,1) = Cp from B1 etc. 
+
+cp = vec2mat(cp.array,12);
+cp = cp(1:6,:);
 
 % Part 3. The 4th gene in columns 10 - 12 is known as a normalization gene.
 % That is, it's should not change between conditions and it is used to normalize 
@@ -74,7 +223,29 @@ N = 500; % define sequence length
 % CpN0 and CpNX are the same quantitites for the normalization gene.
 % Plot this data in an appropriate way. 
 
+norm_genes = cp(:,10:12);
+norm_genes_mean = mean(norm_genes, 1);
 
+
+% calculating mean for the triplicates
+for ii = 0:3
+    cp_mean(:,ii + 1) = mean(cp(:,ii*3+1:(ii+1)*3),2);
+end
+
+for i = (1:size(cp_mean,1)-1)
+    for j = (1:size(cp_mean,2)-1)
+    test(i,j) = cp_mean(i,j) - cp_mean(1,j) - (cp_mean(1,4) - cp_mean(i,4));
+    end
+end
+
+final_results = 2.^test;
+disp(final_results);
+
+bar(final_results);
+ylabel('Fold Change');
+xlabel('Conditions')'
+
+    
 %% Challenge problems that extend the above (optional)
 
 % 1. Write a solution to Problem 2 part 2 that doesn't use any loops at
