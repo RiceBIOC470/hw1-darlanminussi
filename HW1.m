@@ -225,16 +225,17 @@ cp = cp(1:6,:);
 
 norm_genes = cp(:,10:12);
 norm_genes_mean = mean(norm_genes, 1);
-
+test = [];
+final_results = [];
 
 % calculating mean for the triplicates
 for ii = 0:3
     cp_mean(:,ii + 1) = mean(cp(:,ii*3+1:(ii+1)*3),2);
 end
 
-for i = (1:size(cp_mean,1)-1)
+for i = (1:size(cp_mean,1))
     for j = (1:size(cp_mean,2)-1)
-    test(i,j) = cp_mean(i,j) - cp_mean(1,j) - (cp_mean(1,4) - cp_mean(i,4));
+    test(i,j) = cp_mean(1,j) - cp_mean(i,j) - (cp_mean(1,4) - cp_mean(i,4));
     end
 end
 
