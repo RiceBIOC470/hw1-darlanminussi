@@ -54,20 +54,31 @@ rand_seq = bases(gen_numbers);
 start = strfind(rand_seq, 'ATG');
 stop = [strfind(rand_seq, 'TGA') strfind(rand_seq, 'TAA') strfind(rand_seq, 'TAG')];
 
+start = strfind(rand_seq, 'ATG');
+stop = [strfind(rand_seq, 'TGA') strfind(rand_seq, 'TAA') strfind(rand_seq, 'TAG')];
 
+first_stop_codon = zeros(1,length(start));
 for i = 1:length(start)
-    for j = 1:length(stop)
-        length_orf(i) = stop(j) - start(i);
+    length_orf = stop - start(i);
+    good_length = 1e8;
+    index = 0;
+    for j = 1:length(length_orf)
+        if (length_orf(j) > 0) & (mod(length_orf(j),3) == 0) & (length_orf(j) < good_length)
+            good_length = length_orf(j);
+            index = j;
+        end
     end
-end
-
-if (~isempty(length_orf))
-length_orf = length_orf(length_orf > 0);
-length_orf = length_orf(mod(length_orf,3) == 0);
-
-disp(max(length_orf));
-else 
-    disp('No ORF found');
+    if index > 0
+        first_stop_codon(i) = stop(index);
+    else
+        first_stop_codon(i) = start(i);
+    end
+    size_orf = first_stop_codon - start + 3;
+    [max_length_orf, idx_max] = max(size_orf);
+    
+    ORFlength = max_length_orf;
+    start_pos = start(idx_max);
+    stop_pos = first_stop_codon(idx_max);
 end
 
 %part 3: copy your code in parts 1 and 2 but place it inside a loop that
